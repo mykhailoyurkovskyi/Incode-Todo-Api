@@ -1,4 +1,3 @@
-
 import { DotenvConfigOutput, config } from 'dotenv';
 import 'reflect-metadata';
 
@@ -7,7 +6,6 @@ import { inject, injectable } from 'inversify';
 import { IConfigService } from './config.service.interface';
 import { ILogger } from '../logger/logger.interface';
 import { ProcessEnv } from './process.env.interface';
-
 
 @injectable()
 export class ConfigService implements IConfigService {

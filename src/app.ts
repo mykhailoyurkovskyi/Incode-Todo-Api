@@ -1,6 +1,6 @@
 import 'reflect-metadata';
-import { inject, injectable } from "inversify";
-import express, { Express } from "express";
+import { inject, injectable } from 'inversify';
+import express, { Express } from 'express';
 import { Server } from 'http';
 import cors from 'cors';
 import { TYPES } from './types/types';
@@ -8,6 +8,8 @@ import { ILogger } from './logger/logger.interface';
 import { IConfigService } from './config/config.service.interface';
 import { IExceptionFilter } from './errors/exception.filter.interface';
 import { ISequelize } from './db/sequelize.interface';
+import { ITodoService } from './todo/todo.service.interface';
+import { TodoController } from './todo/todos.controller';
 
 @injectable()
 export class App {
@@ -20,6 +22,8 @@ export class App {
     @inject(TYPES.SequelizeService) private sequelizeService: ISequelize,
     @inject(TYPES.ExceptionFilter) private exceptionFilter: IExceptionFilter,
     @inject(TYPES.ConfigService) private configService: IConfigService,
+    @inject(TYPES.TodoService) private todoService: ITodoService,
+    @inject(TYPES.TodoController) private todoController: TodoController,
   ) {
     this.app = express();
     this.port = this.configService.get('PORT') || process.env.PORT;
@@ -49,18 +53,21 @@ export class App {
   }
 
   useRoutes(): void {
-    
+    this.app.use('/todos', this.todoController.router);
   }
 
   useExceptionFilters(): void {
     this.app.use(this.exceptionFilter.catch.bind(this.exceptionFilter));
   }
 
-
   public async init(): Promise<void> {
     this.useRoutes();
     this.useExceptionFilters();
     this.server = this.app.listen(this.port);
     this.logger.log(`Server is running on http://localhost:${this.port}`);
+  }
+
+  public close(): void {
+    this.server.close();
   }
 }

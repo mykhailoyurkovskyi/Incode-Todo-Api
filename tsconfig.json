@@ -102,5 +102,4 @@
   },
   "exclude": ["node_modules", "dist"],
   "include": ["src/**/*", "src/__tests__", "jest.config.js", "dto"],
-  "files": ["src/types/express.d.ts"],
 }

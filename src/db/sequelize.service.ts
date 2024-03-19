@@ -1,10 +1,10 @@
-import { inject, injectable } from "inversify";
-import { ISequelize } from "./sequelize.interface";
+import { inject, injectable } from 'inversify';
+import { ISequelize } from './sequelize.interface';
 import { Sequelize } from 'sequelize-typescript';
-import { TYPES } from "../types/types";
-import { IConfigService } from "../config/config.service.interface";
-import { ILogger } from "../logger/logger.interface";
-import { TodoModel } from "../todo/todo.model";
+import { TYPES } from '../types/types';
+import { IConfigService } from '../config/config.service.interface';
+import { ILogger } from '../logger/logger.interface';
+import { TodoModel } from '../todo/todo.model';
 
 @injectable()
 export class SequelizeService implements ISequelize {
@@ -34,9 +34,7 @@ export class SequelizeService implements ISequelize {
       },
     });
 
-    this.sequelize.addModels([
-      TodoModel
-    ]);
+    this.sequelize.addModels([TodoModel]);
 
     this.logger.log('[Sequelize] Connected to db successfully');
   }

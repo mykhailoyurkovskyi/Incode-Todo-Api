@@ -3,9 +3,9 @@ import bcrypt from 'bcrypt';
 const SALT_ROUNDS = process.env.SALT_ROUNDS || 10;
 
 export async function generateUniqueHashedId(): Promise<string> {
-    const randomId = Math.random().toString(36).substring(2);
-    
-    const hashedId = await bcrypt.hash(randomId, SALT_ROUNDS);
+  const randomId = Math.random().toString(36).substring(2);
 
-    return hashedId;
+  const hashedId = await bcrypt.hash(randomId, SALT_ROUNDS);
+
+  return hashedId;
 }

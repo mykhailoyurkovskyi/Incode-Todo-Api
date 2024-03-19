@@ -3,7 +3,7 @@
 const TABLE_NAME = 'todos';
 
 module.exports = {
-  up: async function(queryInterface, Sequelize) {
+  up: async function (queryInterface, Sequelize) {
     await queryInterface.createTable(TABLE_NAME, {
       id: {
         allowNull: false,
@@ -12,6 +12,11 @@ module.exports = {
       },
       name: {
         allowNull: false,
+        unique: true,
+        type: Sequelize.STRING(100),
+      },
+      description: {
+        allowNull: true,
         type: Sequelize.STRING(250),
       },
       status: {
@@ -21,7 +26,7 @@ module.exports = {
     });
   },
 
-  down: async function(queryInterface) {
+  down: async function (queryInterface) {
     await queryInterface.dropTable(TABLE_NAME);
-  }
+  },
 };

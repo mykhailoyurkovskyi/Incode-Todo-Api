@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import {
   Model,
   Column,
@@ -8,7 +9,6 @@ import {
 import { DataType } from 'sequelize-typescript';
 
 import { TodoStatus } from '../types/TodoStatus';
-import { generateUniqueHashedId } from '../utilities/generateUniqueHashedId';
 
 @Table({
   tableName: 'todos',
@@ -16,28 +16,29 @@ import { generateUniqueHashedId } from '../utilities/generateUniqueHashedId';
   updatedAt: false,
 })
 export class TodoModel extends Model {
-
   @Unique
   @Column({
     type: DataType.STRING,
     primaryKey: true,
   })
-  id: string;
+    id: string;
 
   @Unique
   @Column({
-    type: DataType.STRING(250),
+    type: DataType.STRING(100),
     allowNull: false,
   })
-  name: string;
+    name: string;
+
+  @Column({
+    type: DataType.STRING(250),
+    allowNull: true,
+  })
+    description: string;
 
   @Column({
     type: DataType.ENUM(...Object.values(TodoStatus)),
     allowNull: false,
   })
-  status: TodoStatus;
-
-  async afterCreate() {
-    this.id = await generateUniqueHashedId();
-  }
+    status: TodoStatus;
 }
