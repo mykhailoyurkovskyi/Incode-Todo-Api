@@ -24,6 +24,8 @@ module.exports = {
         type: Sequelize.ENUM('ToDo', 'In Progress', 'Done'),
       },
     });
+    await queryInterface.addIndex(TABLE_NAME, ['name']);
+    await queryInterface.addIndex(TABLE_NAME, ['status']);
   },
 
   down: async function (queryInterface) {

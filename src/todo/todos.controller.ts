@@ -36,9 +36,9 @@ export class TodoController extends BaseController implements ITodoController {
         func: this.deleteTodoByName,
       },
       {
-        path: '/updateTodo/:name',
-        method: 'put',
-        func: this.updateTodoStatus,
+        path: '/updateTodo/:id',
+        method: 'patch',
+        func: this.updateTodo,
       },
       {
         path: '/getTodo/:name',
@@ -53,117 +53,48 @@ export class TodoController extends BaseController implements ITodoController {
     res: Response,
     next: NextFunction,
   ): Promise<void> {
-    try {
-      const todos: TodoModel[] = await this.todoService.getAllTodos();
-      res.status(200).json(todos);
-    } catch (error) {
-      this.loggerService.error('Failed to fetch todos', error);
-      res.status(500).json({ error: 'Failed to fetch todos' });
-    }
+    const todos: TodoModel[] = await this.todoService.getAllTodos();
+
+    res.status(200).json(todos);
   }
 
   async getTodoByName(req: Request, res: Response): Promise<void> {
-    try {
-      const { name } = req.params;
+    const { name } = req.params;
 
-      if (!name) {
-        res.status(400).json({ error: 'Name parameter is required' });
-        return;
-      }
+    const todo = await this.todoService.getTodoByName(name);
 
-      const todo = await this.todoService.getTodoByName(name);
-
-      if (!todo) {
-        res.status(404).json({ error: `Todo with name ${name} not found` });
-        return;
-      }
-
-      res.status(200).json({ todo });
-    } catch (error) {
-      console.error('Failed to get todo by name:', error);
-      res.status(500).json({ error: 'Failed to get todo by name' });
-    }
+    res.status(200).json({ todo });
   }
 
   async createTodo(req: Request, res: Response): Promise<void> {
-    try {
-      const { name, description } = req.body;
+    const { name, description } = req.body;
 
-      if (!name || typeof name !== 'string' || name.length > 100) {
-        res.status(400).json({
-          error:
-            'Name should not be empty and must be a string with maximum length of 100 characters',
-        });
-        return;
-      }
+    const createdTodo: TodoModel = await this.todoService.createTodo(
+      name,
+      description,
+    );
 
-      if (
-        description &&
-        (typeof description !== 'string' || description.length > 250)
-      ) {
-        res.status(400).json({
-          error:
-            'Description must be a string with maximum length of 250 characters',
-        });
-        return;
-      }
-
-      const createdTodo: TodoModel = await this.todoService.createTodo(
-        name,
-        description,
-      );
-      res.status(201).json({ todo: createdTodo });
-    } catch (error) {
-      this.loggerService.error('Failed to create todo', error);
-      res.status(500).json({ error: 'Failed to create todo' });
-    }
+    res.status(201).json(createdTodo);
   }
 
   async deleteTodoByName(req: Request, res: Response): Promise<void> {
-    try {
-      const { name } = req.params;
+    const { name } = req.params;
 
-      if (!name) {
-        res.status(400).json({ error: 'Name parameter is required' });
-        return;
-      }
+    await this.todoService.deleteTodoByName(name);
 
-      await this.todoService.deleteTodoByName(name);
-      res
-        .status(200)
-        .json({ message: `Todo with name ${name} deleted successfully` });
-    } catch (error) {
-      console.error('Failed to delete todo:', error);
-      res.status(500).json({ error: 'Failed to delete todo' });
-    }
+    res
+      .status(200)
+      .json({ message: `Todo with name ${name} deleted successfully` });
   }
 
-  async updateTodoStatus(req: Request, res: Response): Promise<void> {
-    try {
-      const { name } = req.params;
-      const { status } = req.body;
+  async updateTodo(req: Request, res: Response): Promise<void> {
+    const { id } = req.params;
+    const { name, status } = req.body;
 
-      if (!name || !status) {
-        res.status(400).json({ error: 'Name and status are required' });
-        return;
-      }
+    await this.todoService.updateTodo(id, name, status);
 
-      const validStatuses = ['ToDo', 'In Progress', 'Done'];
-
-      if (!validStatuses.includes(status)) {
-        res.status(400).json({
-          error: `Invalid status. Valid options are: ${validStatuses.join(', ')}`,
-        });
-        return;
-      }
-
-      await this.todoService.updateTodoStatus(name, status);
-      res.status(200).json({
-        message: `Status of todo with name ${name} updated successfully`,
-      });
-    } catch (error) {
-      console.error('Failed to update todo status:', error);
-      res.status(500).json({ error: 'Failed to update todo status' });
-    }
+    res.status(200).json({
+      message: `Status of todo with name ${name} updated successfully`,
+    });
   }
 }

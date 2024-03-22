@@ -14,6 +14,8 @@ import { ITodoController } from './todo/todo.controller.interface';
 import { TodoController } from './todo/todos.controller';
 import { ITodoService } from './todo/todo.service.interface';
 import { TodoService } from './todo/todo.service';
+import { ITodoRepository } from './todo/todo.repository.interface';
+import { TodoRepository } from './todo/todo.repository';
 
 export interface IBootstrapReturn {
   appContainer: Container;
@@ -28,6 +30,7 @@ export const appBindings = new ContainerModule((bind: interfaces.Bind) => {
     .inSingletonScope();
   bind<ITodoController>(TYPES.TodoController).to(TodoController);
   bind<ITodoService>(TYPES.TodoService).to(TodoService);
+  bind<ITodoRepository>(TYPES.TodoRepository).to(TodoRepository);
   bind<App>(TYPES.Application).to(App);
   bind<IConfigService>(TYPES.ConfigService)
     .to(ConfigService)

@@ -6,4 +6,5 @@ export const TYPES = {
   ConfigService: Symbol.for('ConfigService'),
   TodoService: Symbol.for('TodoService'),
   TodoController: Symbol.for('TodoController'),
+  TodoRepository: Symbol.for('TodoRepository'),
 };

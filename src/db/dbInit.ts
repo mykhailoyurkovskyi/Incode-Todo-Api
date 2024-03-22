@@ -13,7 +13,7 @@ const dbInit = (): any => {
     dialect: 'postgres',
     models: [__dirname + '/models'],
     dialectOptions: {
-      ssl: false,
+      ssl: true,
     },
   });
 };

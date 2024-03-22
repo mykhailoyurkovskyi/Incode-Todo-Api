@@ -5,6 +5,7 @@ import {
   Table,
   AutoIncrement,
   Unique,
+  Index,
 } from 'sequelize-typescript';
 import { DataType } from 'sequelize-typescript';
 
@@ -24,6 +25,7 @@ export class TodoModel extends Model {
     id: string;
 
   @Unique
+  @Index
   @Column({
     type: DataType.STRING(100),
     allowNull: false,
@@ -36,6 +38,7 @@ export class TodoModel extends Model {
   })
     description: string;
 
+  @Index
   @Column({
     type: DataType.ENUM(...Object.values(TodoStatus)),
     allowNull: false,

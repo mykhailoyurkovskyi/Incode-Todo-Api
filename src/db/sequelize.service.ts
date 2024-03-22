@@ -22,7 +22,7 @@ export class SequelizeService implements ISequelize {
         this.configService.get('DB_PASSWORD') || process.env.DB_PASSWORD,
       database: this.configService.get('DB_NAME') || process.env.DB_NAME,
       dialectOptions: {
-        ssl: false,
+        ssl: true,
       },
       define: {
         scopes: {

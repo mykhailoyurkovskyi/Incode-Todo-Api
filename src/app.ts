@@ -10,6 +10,7 @@ import { IExceptionFilter } from './errors/exception.filter.interface';
 import { ISequelize } from './db/sequelize.interface';
 import { ITodoService } from './todo/todo.service.interface';
 import { TodoController } from './todo/todos.controller';
+import { TodoRepository } from './todo/todo.repository';
 
 @injectable()
 export class App {
@@ -24,6 +25,7 @@ export class App {
     @inject(TYPES.ConfigService) private configService: IConfigService,
     @inject(TYPES.TodoService) private todoService: ITodoService,
     @inject(TYPES.TodoController) private todoController: TodoController,
+    @inject(TYPES.TodoRepository) private todoRepository: TodoRepository,
   ) {
     this.app = express();
     this.port = this.configService.get('PORT') || process.env.PORT;
