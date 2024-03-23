@@ -65,8 +65,9 @@ export class App {
   public async init(): Promise<void> {
     this.useRoutes();
     this.useExceptionFilters();
-    this.server = this.app.listen(this.port);
-    this.logger.log(`Server is running on http://localhost:${this.port}`);
+    this.server = this.app.listen(3000, '0.0.0.0', () => {
+      this.logger.log(`Server is running on http://0.0.0.0:${this.port}`);
+    });
   }
 
   public close(): void {
