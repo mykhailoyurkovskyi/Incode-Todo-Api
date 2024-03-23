@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 
-const SALT_ROUNDS = process.env.SALT_ROUNDS || 10;
+const SALT_ROUNDS = Number(process.env.SALT_ROUNDS) || 10;
 
 export async function generateUniqueHashedId(): Promise<string> {
   const randomId = Math.random().toString(36).substring(2);
