@@ -14,7 +14,12 @@ const DB_URI = `postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_
 const settings = {
   seederStorage: 'sequelize',
   url: DB_URI,
-  dialectOptions: {},
+  dialectOptions: {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false,
+    },
+  },
 };
 
 module.exports = {
