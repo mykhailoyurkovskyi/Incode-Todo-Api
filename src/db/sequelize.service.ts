@@ -5,6 +5,7 @@ import { TYPES } from '../types/types';
 import { IConfigService } from '../config/config.service.interface';
 import { ILogger } from '../logger/logger.interface';
 import { TodoModel } from '../todo/todo.model';
+import { BoardModel } from '../boards/board.model';
 
 @injectable()
 export class SequelizeService implements ISequelize {
@@ -34,7 +35,7 @@ export class SequelizeService implements ISequelize {
       },
     });
 
-    this.sequelize.addModels([TodoModel]);
+    this.sequelize.addModels([TodoModel, BoardModel]);
 
     this.logger.log('[Sequelize] Connected to db successfully');
   }

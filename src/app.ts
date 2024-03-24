@@ -11,6 +11,9 @@ import { ISequelize } from './db/sequelize.interface';
 import { ITodoService } from './todo/todo.service.interface';
 import { TodoController } from './todo/todos.controller';
 import { TodoRepository } from './todo/todo.repository';
+import { BoardRepository } from './boards/board.repository';
+import { BoardService } from './boards/board.service';
+import { BoardController } from './boards/board.controller';
 
 @injectable()
 export class App {
@@ -26,6 +29,9 @@ export class App {
     @inject(TYPES.TodoService) private todoService: ITodoService,
     @inject(TYPES.TodoController) private todoController: TodoController,
     @inject(TYPES.TodoRepository) private todoRepository: TodoRepository,
+    @inject(TYPES.BoardRepository) private boardRepository: BoardRepository,
+    @inject(TYPES.BoardService) private boardService: BoardService,
+    @inject(TYPES.BoardController) private boardController: BoardController,
   ) {
     this.app = express();
     this.port = this.configService.get('PORT') || process.env.PORT;
@@ -46,16 +52,11 @@ export class App {
     this.useCors();
     this.useRoutes();
     this.useExceptionFilters();
-    this.useStaticImg();
-  }
-
-  useStaticImg(): void {
-    this.app.use(express.static('public'));
-    this.app.use(express.static(__dirname + '/public'));
   }
 
   useRoutes(): void {
     this.app.use('/todos', this.todoController.router);
+    this.app.use('/boards', this.boardController.router);
   }
 
   useExceptionFilters(): void {

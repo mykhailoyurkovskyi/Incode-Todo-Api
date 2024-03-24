@@ -10,6 +10,8 @@ import { IConfigService } from '../config/config.service.interface';
 import { ITodoService } from './todo.service.interface';
 import { TodoModel } from './todo.model';
 import { TodoStatus } from '../types/TodoStatus';
+import { IBoardService } from '../boards/board.service.interface';
+import { ValidateMiddleware } from '../middlewares/validate.middleware';
 
 @injectable()
 export class TodoController extends BaseController implements ITodoController {
@@ -17,13 +19,15 @@ export class TodoController extends BaseController implements ITodoController {
     @inject(TYPES.ILogger) private loggerService: ILogger,
     @inject(TYPES.ConfigService) private configService: IConfigService,
     @inject(TYPES.TodoService) private todoService: ITodoService,
+    @inject(TYPES.BoardService) private boardService: IBoardService,
   ) {
     super(loggerService);
     this.bindRoutes([
       {
         path: '/getAllTodos',
-        method: 'get',
+        method: 'post',
         func: this.getAllTodos,
+        middlewares: [new ValidateMiddleware(TodoModel)],
       },
       {
         path: '/createTodo',
@@ -31,19 +35,14 @@ export class TodoController extends BaseController implements ITodoController {
         func: this.createTodo,
       },
       {
-        path: '/deleteTodo/:name',
+        path: '/deleteTodo/:id',
         method: 'delete',
-        func: this.deleteTodoByName,
+        func: this.deleteTodo,
       },
       {
-        path: '/updateTodo/:id',
-        method: 'patch',
+        path: '/updateTodo',
+        method: 'post',
         func: this.updateTodo,
-      },
-      {
-        path: '/getTodo/:name',
-        method: 'get',
-        func: this.getTodoByName,
       },
     ]);
   }
@@ -53,48 +52,41 @@ export class TodoController extends BaseController implements ITodoController {
     res: Response,
     next: NextFunction,
   ): Promise<void> {
-    const todos: TodoModel[] = await this.todoService.getAllTodos();
+    const { boardId } = req.body;
+    const todos: TodoModel[] = await this.todoService.getAllTodos(boardId);
 
     res.status(200).json(todos);
   }
 
-  async getTodoByName(req: Request, res: Response): Promise<void> {
-    const { name } = req.params;
-
-    const todo = await this.todoService.getTodoByName(name);
-
-    res.status(200).json({ todo });
-  }
-
   async createTodo(req: Request, res: Response): Promise<void> {
-    const { name, description } = req.body;
+    const { boardId, title, description } = req.body;
 
-    const createdTodo: TodoModel = await this.todoService.createTodo(
-      name,
+    const createdTodo: TodoModel | null = await this.todoService.createTodo(
+      boardId,
+      title,
       description,
     );
 
     res.status(201).json(createdTodo);
   }
 
-  async deleteTodoByName(req: Request, res: Response): Promise<void> {
-    const { name } = req.params;
+  async deleteTodo(req: Request, res: Response): Promise<void> {
+    const { id } = req.params;
 
-    await this.todoService.deleteTodoByName(name);
+    await this.todoService.deleteTodo(parseInt(id));
 
     res
       .status(200)
-      .json({ message: `Todo with name ${name} deleted successfully` });
+      .json({ message: `Todo with id ${id} deleted successfully` });
   }
 
   async updateTodo(req: Request, res: Response): Promise<void> {
-    const { id } = req.params;
-    const { name, status } = req.body;
+    const { id, updateData } = req.body;
 
-    await this.todoService.updateTodo(id, name, status);
+    await this.todoService.updateTodo(parseInt(id), updateData);
 
     res.status(200).json({
-      message: `Status of todo with name ${name} updated successfully`,
+      message: 'Todo  updated successfully',
     });
   }
 }

@@ -16,6 +16,12 @@ import { ITodoService } from './todo/todo.service.interface';
 import { TodoService } from './todo/todo.service';
 import { ITodoRepository } from './todo/todo.repository.interface';
 import { TodoRepository } from './todo/todo.repository';
+import { BoardRepository } from './boards/board.repository';
+import { IBoardRepository } from './boards/board.repository.interface';
+import { IBoardService } from './boards/board.service.interface';
+import { BoardService } from './boards/board.service';
+import { IBoardController } from './boards/board.controller.interface';
+import { BoardController } from './boards/board.controller';
 
 export interface IBootstrapReturn {
   appContainer: Container;
@@ -31,6 +37,9 @@ export const appBindings = new ContainerModule((bind: interfaces.Bind) => {
   bind<ITodoController>(TYPES.TodoController).to(TodoController);
   bind<ITodoService>(TYPES.TodoService).to(TodoService);
   bind<ITodoRepository>(TYPES.TodoRepository).to(TodoRepository);
+  bind<IBoardRepository>(TYPES.BoardRepository).to(BoardRepository);
+  bind<IBoardService>(TYPES.BoardService).to(BoardService);
+  bind<IBoardController>(TYPES.BoardController).to(BoardController);
   bind<App>(TYPES.Application).to(App);
   bind<IConfigService>(TYPES.ConfigService)
     .to(ConfigService)

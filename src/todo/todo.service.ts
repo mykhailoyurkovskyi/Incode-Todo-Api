@@ -3,9 +3,10 @@ import { ITodoService } from './todo.service.interface';
 import { TYPES } from '../types/types';
 import { IConfigService } from '../config/config.service.interface';
 import { TodoModel } from './todo.model';
-import { generateUniqueHashedId } from '../utilities/generateUniqueHashedId';
 import { TodoStatus } from '../types/TodoStatus';
 import { ITodoRepository } from './todo.repository.interface';
+import { IBoardService } from '../boards/board.service.interface';
+import { UpdateTodoDto } from '../types/UpdateTodoDto';
 
 @injectable()
 export class TodoService implements ITodoService {
@@ -13,77 +14,61 @@ export class TodoService implements ITodoService {
   constructor(
     @inject(TYPES.ConfigService) private configService: IConfigService,
     @inject(TYPES.TodoRepository) private todoRepository: ITodoRepository,
+    @inject(TYPES.BoardService) private boardService: IBoardService,
   ) {}
 
-  async createTodo(name: string, description: string): Promise<TodoModel> {
-    if (name.length > 100) {
-      throw new Error('Name cannot be longer than 100 characters');
-    }
-
-    if (description && description.length > 250) {
-      throw new Error('Description cannot be longer than 250 characters');
-    }
-
-    if (!name || name.trim() === '') {
-      throw new Error('Name cannot be empty');
-    }
-
-    if (description && description.trim() === '') {
-      throw new Error('Description cannot be empty');
-    }
-
+  async getAllTodos(boardId: string): Promise<TodoModel[]> {
     try {
-      const hashedId = await generateUniqueHashedId();
+      const board = await this.boardService.get(boardId);
+
+      const todos = await this.todoRepository.getAllTodos(board!.boardId);
+
+      return todos;
+    } catch (error) {
+      console.error('Failed to get todos:', error);
+      return [];
+    }
+  }
+
+  async createTodo(
+    boardId: string,
+    title: string,
+    description: string,
+  ): Promise<TodoModel | null> {
+    try {
+      const board = await this.boardService.get(boardId);
       const status = TodoStatus.TODO;
+
       const todoModel = new TodoModel({
-        id: hashedId,
-        name,
+        title,
         status,
         description,
+        boardId: board!.boardId,
       });
+
       const createdTodo: TodoModel =
         await this.todoRepository.createTodo(todoModel);
 
       return createdTodo;
     } catch (error) {
       console.error('Error creating todo:', error);
-      throw error;
+      return null;
     }
   }
 
-  async deleteTodoByName(name: string): Promise<void> {
+  async deleteTodo(id: number): Promise<void> {
     try {
-      await this.todoRepository.deleteTodoByName(name);
+      await this.todoRepository.deleteTodo(id);
     } catch (error) {
-      throw new Error('Failed to delete todo');
+      throw new Error('Failed to delete todo: ' + error);
     }
   }
 
-  async getAllTodos(): Promise<TodoModel[]> {
+  async updateTodo(id: number, updateData: UpdateTodoDto): Promise<void> {
     try {
-      const todos: TodoModel[] = await this.todoRepository.getAllTodos();
-
-      return todos;
+      await this.todoRepository.updateTodo(id, updateData);
     } catch (error) {
-      console.error('Error fetching todos:', error);
-      throw error;
-    }
-  }
-
-  async updateTodo(id: string, name: string, status: string): Promise<void> {
-    try {
-      await this.todoRepository.updateTodo(id, name, status);
-    } catch (error) {
-      throw new Error('Failed to update todo status');
-    }
-  }
-
-  async getTodoByName(name: string): Promise<TodoModel | null> {
-    try {
-      const todo = this.todoRepository.getTodoByName(name);
-      return todo || null;
-    } catch (error) {
-      throw new Error('Failed to get todo by name');
+      console.error('Error updating todo:', error);
     }
   }
 }
