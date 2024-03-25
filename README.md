@@ -1,4 +1,4 @@
-Tests do not work, cuz board and models were changed..
+Tests do not work, cuz board and todo models were changed..
 
 INFO    [Sequelize] Connected to db successfully
 INFO    [post] /getAllTodos
